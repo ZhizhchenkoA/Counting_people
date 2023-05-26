@@ -13,19 +13,14 @@ classNames = {0: 'background',
 
 
 # Load the Caffe model
-def main(photo_path):
+def main(photo_path, camera_id=0):
     net = cv2.dnn.readNetFromCaffe('MobileNetSSD_deploy.prototxt', 'MobileNetSSD_deploy.caffemodel')
     # Load image fro
     frame = cv2.imread(photo_path)
     frame_resized = cv2.resize(frame, (300, 300))  # resize frame for prediction
     heightFactor = frame.shape[0] / 300.0
     widthFactor = frame.shape[1] / 300.0
-    # MobileNet requires fixed dimensions for input image(s)
-    # so we have to ensure that it is resized to 300x300 pixels.
-    # set a scale factor to image because network the objects has differents size.
-    # We perform a mean subtraction (127.5, 127.5, 127.5) to normalize the input;
-    # after executing this command our "blob" now has the shape:
-    # (1, 3, 300, 300)
+
     blob = cv2.dnn.blobFromImage(frame_resized, 0.007843, (300, 300), (127.5, 127.5, 127.5), False)
     # Set to network the input blob
     net.setInput(blob)
@@ -43,8 +38,9 @@ def main(photo_path):
     # value in @detections array .
     for i in range(detections.shape[2]):
         confidence = detections[0, 0, i, 2]  # Confidence of prediction
-        if confidence > 0.0:  # Filter prediction
-            class_id = int(detections[0, 0, i, 1])  # Class label
+        class_id = int(detections[0, 0, i, 1])  # Class label
+
+        if confidence > 0.0 and class_id == 15:  # Filter prediction
 
             # Object location
             xLeftBottom = int(detections[0, 0, i, 3] * cols)
@@ -67,8 +63,9 @@ def main(photo_path):
 
     for i in range(detections.shape[2]):
         confidence = detections[0, 0, i, 2]  # Confidence of prediction
-        if confidence > 0.0:  # Filter prediction
-            class_id = int(detections[0, 0, i, 1])  # Class label
+        class_id = int(detections[0, 0, i, 1])  # Class label
+        if confidence > 0.0 and class_id == 15:  # Filter prediction
+
 
             # Object location
             xLeftBottom = int(detections[0, 0, i, 3] * cols)
@@ -94,8 +91,11 @@ def main(photo_path):
                 cv2.putText(frame, label, (xLeftBottom_, yLeftBottom_),
                             cv2.FONT_HERSHEY_TRIPLEX, 0.8, (0, 0, 0))
                 print(label)  # print class and confidence
-                print(len(label))
+
     cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
     cv2.imshow("frame", frame)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    cv2.imwrite(f'Photos/{camera_id}.jpg', frame)
+    return len(label)
+
+
+print(main('Photos/class1.jpg'))

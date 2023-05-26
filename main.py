@@ -9,12 +9,12 @@ classNames = {0: 'background',
 
               10: 'cow', 11: 'diningtable', 12: 'dog', 13: 'horse',
 
-              14: 'motorbike', 15: 'person', 16: 'pottedplant',
+              14: 'motorbike', 15: 'person', 16: 'plant',
 
-              17: 'sheep', 18: 'sofa', 19: 'train', 20: 'tvmonitor'}
+              17: 'sheep', 18: 'sofa', 19: 'train', 20: 'tv'}
 
 
-def main(video_path):
+def main(video_path, camera_id=0):
     net = cv.dnn.readNetFromCaffe("MobileNetSSD_deploy.prototxt", "MobileNetSSD_deploy.caffemodel")
     cap = cv.VideoCapture(video_path)
     while True:
@@ -43,8 +43,9 @@ def main(video_path):
         # value in @detections array .
         for i in range(detections.shape[2]):
             confidence = detections[0, 0, i, 2]  # Confidence of prediction
-            if confidence > 0.:  # Filter prediction
-                class_id = int(detections[0, 0, i, 1])  # Class label
+            class_id = int(detections[0, 0, i, 1])  # Class label
+            if confidence > 0.0 and class_id == 15:  # Filter prediction
+
 
                 # Object location
                 xLeftBottom = int(detections[0, 0, i, 3] * cols)
@@ -76,8 +77,10 @@ def main(video_path):
                     cv.putText(frame, label, (xLeftBottom, yLeftBottom),
                                 cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
-                    print(label)  # print class and confidence
+                     # print class and confidence
         cv.namedWindow("frame", cv.WINDOW_NORMAL)
         cv.imshow("frame", frame)
         if cv.waitKey(1) >= 0:  # Break with ESC
             break
+    cv.imwrite(f'{camera_id}.jpg', frame)
+
