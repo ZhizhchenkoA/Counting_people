@@ -15,7 +15,7 @@ classNames = {0: 'background',
 
 
 def main(video_path, camera_id=0):
-    net = cv.dnn.readNetFromCaffe("MobileNetSSD_deploy.prototxt", "MobileNetSSD_deploy.caffemodel")
+    net = cv.dnn.readNetFromCaffe("Models/MobileNetSSD_deploy.prototxt", "Models/MobileNetSSD_deploy.caffemodel")
     cap = cv.VideoCapture(video_path)
     while True:
         ret, frame = cap.read()

@@ -14,7 +14,7 @@ classNames = {0: 'background',
 
 # Load the Caffe model
 def main(photo_path, camera_id=0):
-    net = cv2.dnn.readNetFromCaffe('MobileNetSSD_deploy.prototxt', 'MobileNetSSD_deploy.caffemodel')
+    net = cv2.dnn.readNetFromCaffe('Models/MobileNetSSD_deploy.prototxt', 'Models/MobileNetSSD_deploy.caffemodel')
     # Load image fro
     frame = cv2.imread(photo_path)
     frame_resized = cv2.resize(frame, (300, 300))  # resize frame for prediction

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title}}</title>
+</head>
+<body>
+<form action="/add_camera" method="post" class="form">
+    <p><label> № Камеры </label> <input type="number" name="id" value="" required/>
+    <p><label> Площадь помещения </label> <input type="number" name="space" value="" required/>
+    <p><input type="submit" value="отправить"></p>
+</form>
+{% for i in cameras_links -%}
+    <p><a href="{{i.id}}camera"> Камера №{{i.id}}</a>
+{% endfor -%}
+
+</body>
+</html>
