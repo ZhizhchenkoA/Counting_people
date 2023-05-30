@@ -1,13 +1,20 @@
-<!doctype html>
-<html lang="ru">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Загрузка фото</title>
 </head>
 <body>
+    <h1>Загрузка фото</h1>
 
+    <form action="/{{id}}camera" method="post" enctype="multipart/form-data">
+        <input type="file" name="photo">
+        <input type="submit" value="Загрузить">
+    </form>
+
+    {% if photo_url %}
+    <h2>Загруженное фото:</h2>
+      <img src="{{ url_for('static', filename='Photos/' + photo_url) }}" alt="Загруженное фото">
+        <h5>{{number_of_people}}</h5>
+    {% endif %}
 </body>
-</html>
+</html>v

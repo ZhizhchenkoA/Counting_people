@@ -1,53 +1,48 @@
 import cv2
 
-# construct the argument parse
+# Используемые моделью MobileNetSSD классификации объектов
+classNames = {0: 'фон',
+              1: 'самолёт', 2: 'велосипед', 3: 'птица', 4: 'лодка',
+              5: 'бутылка', 6: 'автобус', 7: 'машина', 8: 'кошка', 9: 'стул',
+              10: 'корова', 11: 'стол', 12: 'собака', 13: 'лошадь',
+              14: 'мотоцикл', 15: 'человек', 16: 'растение в горшке',
+              17: 'овца', 18: 'диван', 19: 'поезд', 20: 'монитор'}
 
 
-# Labels of Network.
-classNames = {0: 'background',
-              1: 'aeroplane', 2: 'bicycle', 3: 'bird', 4: 'boat',
-              5: 'bottle', 6: 'bus', 7: 'car', 8: 'cat', 9: 'chair',
-              10: 'cow', 11: 'diningtable', 12: 'dog', 13: 'horse',
-              14: 'motorbike', 15: 'person', 16: 'pottedplant',
-              17: 'sheep', 18: 'sofa', 19: 'train', 20: 'tvmonitor'}
-
-
-# Load the Caffe model
 def main(photo_path, camera_id=0):
+    # Загрузка используемой модели вместе с конфигурацией
     net = cv2.dnn.readNetFromCaffe('Models/MobileNetSSD_deploy.prototxt', 'Models/MobileNetSSD_deploy.caffemodel')
-    # Load image fro
-    frame = cv2.imread(photo_path)
-    frame_resized = cv2.resize(frame, (300, 300))  # resize frame for prediction
+
+    frame = cv2.imread(photo_path)  # Загрузка введенного изображения
+    frame_resized = cv2.resize(frame, (300, 300))  # изменение размера фото для распознования людей
+    #  Создание переменных масштаба
     heightFactor = frame.shape[0] / 300.0
     widthFactor = frame.shape[1] / 300.0
-
+    # Создание блоб-объекта из изображения
     blob = cv2.dnn.blobFromImage(frame_resized, 0.007843, (300, 300), (127.5, 127.5, 127.5), False)
-    # Set to network the input blob
+    # Подача blob в MobileNetSSD
     net.setInput(blob)
-    # Prediction of network
-    detections = net.forward()
+
+    detections = net.forward()  # Все объекты, обнаруженные моделью
 
     frame_copy = frame.copy()
-    frame_copy2 = frame.copy()
-    # Size of frame resize (300x300)
+
+    # Размер изображения
     cols = frame_resized.shape[1]
     rows = frame_resized.shape[0]
-
-    # For get the class and location of object detected,
-    # There is a fix index for class, location and confidence
-    # value in @detections array .
+    number_of_people = 0
     for i in range(detections.shape[2]):
-        confidence = detections[0, 0, i, 2]  # Confidence of prediction
-        class_id = int(detections[0, 0, i, 1])  # Class label
 
-        if confidence > 0.0 and class_id == 15:  # Filter prediction
+        class_id = int(detections[0, 0, i, 1])  # Классификация объекта
 
-            # Object location
+        if class_id == 15:  # Если объект является человеком
+            number_of_people += 1
+            # Местоположение объекта в изменённом изображении
             xLeftBottom = int(detections[0, 0, i, 3] * cols)
             yLeftBottom = int(detections[0, 0, i, 4] * rows)
             xRightTop = int(detections[0, 0, i, 5] * cols)
             yRightTop = int(detections[0, 0, i, 6] * rows)
-
+            # Местоположение объекта в оригинальном изображении
             xLeftBottom_ = int(widthFactor * xLeftBottom)
             yLeftBottom_ = int(heightFactor * yLeftBottom)
             xRightTop_ = int(widthFactor * xRightTop)
@@ -58,16 +53,14 @@ def main(photo_path, camera_id=0):
 
             cv2.rectangle(frame_copy, (xLeftBottom_, yLeftBottom_), (xRightTop_, yRightTop_),
                           (0, 255, 0), -1)
-    opacity = 0.3
-    cv2.addWeighted(frame_copy, opacity, frame, 1 - opacity, 0, frame)
+
+
+    cv2.addWeighted(frame_copy, 0, frame, 1, 0, frame)
 
     for i in range(detections.shape[2]):
-        confidence = detections[0, 0, i, 2]  # Confidence of prediction
-        class_id = int(detections[0, 0, i, 1])  # Class label
-        if confidence > 0.0 and class_id == 15:  # Filter prediction
-
-
-            # Object location
+        confidence = detections[0, 0, i, 2]
+        class_id = int(detections[0, 0, i, 1])
+        if confidence > 0.0 and class_id == 15:
             xLeftBottom = int(detections[0, 0, i, 3] * cols)
             yLeftBottom = int(detections[0, 0, i, 4] * rows)
             xRightTop = int(detections[0, 0, i, 5] * cols)
@@ -79,23 +72,20 @@ def main(photo_path, camera_id=0):
             yRightTop_ = int(heightFactor * yRightTop)
             cv2.rectangle(frame, (xLeftBottom_, yLeftBottom_), (xRightTop_, yRightTop_),
                           (0, 0, 0), 2)
-            # Draw label and confidence of prediction in frame resized
-            if class_id in classNames:
-                label = classNames[class_id] + ": " + str(confidence)
-                labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_TRIPLEX, 0.8, 1)
+            # Нанесение прямоугольников и вероятности принадлежности к классу на оригинальном изображении
 
-                yLeftBottom_ = max(yLeftBottom_, labelSize[1])
-                cv2.rectangle(frame, (xLeftBottom_, yLeftBottom_ - labelSize[1]),
-                              (xLeftBottom_ + labelSize[0], yLeftBottom_ + baseLine),
-                              (255, 255, 255), cv2.FILLED)
-                cv2.putText(frame, label, (xLeftBottom_, yLeftBottom_),
-                            cv2.FONT_HERSHEY_TRIPLEX, 0.8, (0, 0, 0))
-                print(label)  # print class and confidence
+            label = classNames[class_id] + ": " + str(confidence)
+            # labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_TRIPLEX, 0.8, 1)
+            #
+            # yLeftBottom_ = max(yLeftBottom_, labelSize[1])
+            # cv2.rectangle(frame, (xLeftBottom_, yLeftBottom_ - labelSize[1]),
+            #               (xLeftBottom_ + labelSize[0], yLeftBottom_ + baseLine),
+            #               (255, 255, 255))
+            # cv2.putText(frame, label, (xLeftBottom_, yLeftBottom_),
+            #             cv2.FONT_HERSHEY_TRIPLEX, 0.8, (0, 0, 0))
 
     cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
     cv2.imshow("frame", frame)
-    cv2.imwrite(f'Photos/{camera_id}.jpg', frame)
-    return len(label)
+    cv2.imwrite(f'static/Photos/{camera_id}.jpeg', frame)
 
-
-print(main('Photos/class1.jpg'))
+    return number_of_people
