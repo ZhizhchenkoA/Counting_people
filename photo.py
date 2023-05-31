@@ -47,13 +47,12 @@ def main(photo_path, camera_id=0):
             yLeftBottom_ = int(heightFactor * yLeftBottom)
             xRightTop_ = int(widthFactor * xRightTop)
             yRightTop_ = int(heightFactor * yRightTop)
-            # Draw location of object
+            # рисоване прямоугольников у людей
             cv2.rectangle(frame_resized, (xLeftBottom, yLeftBottom), (xRightTop, yRightTop),
                           (0, 255, 0))
 
             cv2.rectangle(frame_copy, (xLeftBottom_, yLeftBottom_), (xRightTop_, yRightTop_),
                           (0, 255, 0), -1)
-
 
     cv2.addWeighted(frame_copy, 0, frame, 1, 0, frame)
 
@@ -71,7 +70,7 @@ def main(photo_path, camera_id=0):
             xRightTop_ = int(widthFactor * xRightTop)
             yRightTop_ = int(heightFactor * yRightTop)
             cv2.rectangle(frame, (xLeftBottom_, yLeftBottom_), (xRightTop_, yRightTop_),
-                          (0, 0, 0), 2)
+                          (255, 0, 0), thickness=2)
             # Нанесение прямоугольников и вероятности принадлежности к классу на оригинальном изображении
 
             label = classNames[class_id] + ": " + str(confidence)
