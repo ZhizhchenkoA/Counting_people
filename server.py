@@ -38,8 +38,11 @@ def upload_photo(id):
             photo.save('static/Photos/' + photo.filename)
             n = ph.main('static/Photos/' + photo.filename, camera_id=int(id))
 
-            # Возвращаем шаблон страницы с отображением загруженного фото
-            return render_template('video_load.html', photo_url=id + '.jpeg', id=id, number_of_people=n)
+            try:
+                # Возвращаем шаблон страницы с отображением загруженного фото
+                return render_template('video_load.html', photo_url=id + '.jpeg', id=id, number_of_people=n)
+            except:
+                return render_template('video_load.html', id=id)
 
     # Если метод запроса GET или файл не был загружен или имеет недопустимое расширение, отображаем страницу загрузки
     return render_template('video_load.html', id=id)
