@@ -74,14 +74,6 @@ def main(photo_path, camera_id=0):
             # Нанесение прямоугольников и вероятности принадлежности к классу на оригинальном изображении
 
             label = classNames[class_id] + ": " + str(confidence)
-            # labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_TRIPLEX, 0.8, 1)
-            #
-            # yLeftBottom_ = max(yLeftBottom_, labelSize[1])
-            # cv2.rectangle(frame, (xLeftBottom_, yLeftBottom_ - labelSize[1]),
-            #               (xLeftBottom_ + labelSize[0], yLeftBottom_ + baseLine),
-            #               (255, 255, 255))
-            # cv2.putText(frame, label, (xLeftBottom_, yLeftBottom_),
-            #             cv2.FONT_HERSHEY_TRIPLEX, 0.8, (0, 0, 0))
 
     cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
     cv2.imshow("frame", frame)
