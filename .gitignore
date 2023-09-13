@@ -2,3 +2,8 @@
 settings.py
 node_modules
 __pycache__
+.env
+static/photos/*.png
+*.jpg
+*.jpeg
+*.pptx

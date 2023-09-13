@@ -1,5 +1,5 @@
 import cv2
-
+from pathlib import Path
 # Используемые моделью MobileNetSSD классификации объектов
 classNames = {0: 'фон',
               1: 'самолёт', 2: 'велосипед', 3: 'птица', 4: 'лодка',
@@ -75,8 +75,10 @@ def main(photo_path, camera_id=0):
 
             label = classNames[class_id] + ": " + str(confidence)
 
-    cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
-    cv2.imshow("frame", frame)
-    cv2.imwrite(f'static/Photos/{camera_id}.jpeg', frame)
+    # cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
+    # cv2.imshow("frame", frame)
+    path = Path(__file__).parents[1]
+    cv2.imwrite(str(path) + f'site/static/photos/{camera_id}.jpeg', frame)
 
     return number_of_people
+

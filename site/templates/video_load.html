@@ -13,8 +13,8 @@
 
     {% if photo_url %}
     <h2>Загруженное фото:</h2>
-      <img src="{{ url_for('static', filename='Photos/' + photo_url) }}" alt="Загруженное фото">
+      <img src="{{ url_for('static', filename=photo_url) }}" alt="Загруженное фото">
         <h5>{{number_of_people}}</h5>
     {% endif %}
 </body>
-</html>v
+</html>
